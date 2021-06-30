@@ -6,13 +6,20 @@ const pathModule = require('path');
 const generateCertificate = async (req, res) => {
     let newCertificate = new Certificates();
     newCertificate.uid = shortid.generate();
-    const forked = fork(pathModule.join(__dirname, '../generatePng.js'), [req.body.name, newCertificate.uid]);
+    newCertificate.name = req.body.name;
+    newCertificate.path = `certificates/${newCertificate.uid}.png`;
+    try{
+        await newCertificate.save();
+    }catch(err){
+        return res.status(500).json({message: err.message});
+    }
+   
+   //const forked = fork(pathModule.join(__dirname, '../generatePng.js'), [req.body.name, newCertificate.uid]);
 
 
 }
 
 const getCertificate = async (req, res) => {
-    console.log(req.params.certificateUid);
     const certificateUid = req.params.certificateUid;
     let certificate;
     try {
@@ -21,9 +28,9 @@ const getCertificate = async (req, res) => {
         return res.status(500).json({ message: err.message });
     }
     if(certificate){
-        // do something
+        return res.sendFile(pathModule.join(__dirname,`../${certificate.path}`));
     }else{
-        console.log("Certificate not found");
+        return res.status(404).json({message: "File not found"});
     }
 
 }
