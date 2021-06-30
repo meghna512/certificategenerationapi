@@ -1,6 +1,6 @@
 const Certificates = require("../model/certificate");
 const shortid = require('shortid');
-const { fork } = require('child_process');
+const { execSync } = require('child_process');
 const pathModule = require('path');
 
 const generateCertificate = async (req, res) => {
@@ -8,14 +8,14 @@ const generateCertificate = async (req, res) => {
     newCertificate.uid = shortid.generate();
     newCertificate.name = req.body.name;
     newCertificate.path = `certificates/${newCertificate.uid}.png`;
-    try{
+ 
+    try {
+         execSync(`convert -size 1920x1080 -gravity Center -pointsize 100 -fill black label:${newCertificate.name} ./certificates/${newCertificate.uid}.png`);
         await newCertificate.save();
-    }catch(err){
-        return res.status(500).json({message: err.message});
+        return res.sendFile(pathModule.join(__dirname, `../${newCertificate.path}`));
+    } catch (err) {
+        return res.status(500).json({ message: err })
     }
-   
-   //const forked = fork(pathModule.join(__dirname, '../generatePng.js'), [req.body.name, newCertificate.uid]);
-
 
 }
 
@@ -23,14 +23,14 @@ const getCertificate = async (req, res) => {
     const certificateUid = req.params.certificateUid;
     let certificate;
     try {
-        certificate = await Certificates.findOne({uid : certificateUid});
-    }catch(err){
+        certificate = await Certificates.findOne({ uid: certificateUid });
+    } catch (err) {
         return res.status(500).json({ message: err.message });
     }
-    if(certificate){
-        return res.sendFile(pathModule.join(__dirname,`../${certificate.path}`));
-    }else{
-        return res.status(404).json({message: "File not found"});
+    if (certificate) {
+        return res.sendFile(pathModule.join(__dirname, `../${certificate.path}`));
+    } else {
+        return res.status(404).json({ message: "File not found" });
     }
 
 }
