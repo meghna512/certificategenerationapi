@@ -1,4 +1,3 @@
-//Om sai ram
 const app = require('express')();
 const router = require('./routes/index');
 const db = require('./db');
