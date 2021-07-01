@@ -8,9 +8,9 @@ const generateCertificate = async (req, res) => {
     newCertificate.uid = shortid.generate();
     newCertificate.name = req.body.name;
     newCertificate.path = `certificates/${newCertificate.uid}.png`;
- 
+
     try {
-         execSync(`convert -size 1920x1080 -gravity Center -pointsize 100 -fill black label:${newCertificate.name} ./certificates/${newCertificate.uid}.png`);
+        execSync(`convert -size 1920x1080 -gravity Center -pointsize 100 -fill black label:${newCertificate.name} ./certificates/${newCertificate.uid}.png`);
         await newCertificate.save();
         return res.sendFile(pathModule.join(__dirname, `../${newCertificate.path}`));
     } catch (err) {

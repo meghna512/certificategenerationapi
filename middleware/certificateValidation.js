@@ -6,7 +6,6 @@ const validateMiddleware = async (req, res, next) => {
     });
     try{      
         const { error, value } = await schema.validateAsync({name: req.body.name});
-        
         return next();
     }catch(err){
         return res.status(500).json({message: err.details[0].message});
