@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(`mongodb://localhost:27017/${process.env.DB}`, {
+        await mongoose.connect(`mongodb://${process.env.MONGODB_HOST}/${process.env.DB}`, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useFindAndModify: false,
